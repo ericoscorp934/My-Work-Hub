@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Work Hub</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+    header {
+      background: #1e3a5f;
+      color: white;
+      padding: 24px 40px;
+    }
+    header h1 { font-size: 28px; }
+    header p { font-size: 14px; opacity: 0.7; margin-top: 4px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      padding: 40px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 28px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      text-decoration: none;
+      color: inherit;
+      transition: transform 0.2s;
+    }
+    .card:hover { transform: translateY(-4px); }
+    .card .icon { font-size: 36px; margin-bottom: 12px; }
+    .card h2 { font-size: 18px; margin-bottom: 8px; }
+    .card p { font-size: 14px; color: #666; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>👋 My Work Hub</h1>
+    <p>Your personal workspace — all tools in one place</p>
+  </header>
+
+  <div class="grid">
+    <div class="card">
+      <div class="icon">📋</div>
+      <h2>Planning Board</h2>
+      <p>Manage your tasks, deadlines and priorities</p>
+    </div>
+    <div class="card">
+      <div class="icon">🤖</div>
+      <h2>AI Tools</h2>
+      <p>SOP generator, meeting agenda, document summarizer</p>
+    </div>
+    <div class="card">
+      <div class="icon">📊</div>
+      <h2>Stock Dashboard</h2>
+      <p>Track your watchlist and analyze stocks</p>
+    </div>
+  </div>
+
+</body>
+</html>
