@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Planning Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 170, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 170, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 20px 40px;
+      border-bottom: 1px solid rgba(0, 170, 255, 0.15);
+      background: rgba(10, 10, 20, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-btn {
+      color: #00aaff;
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 1; }
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+    header h1 span { color: #00aaff; }
+    .header-right {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    /* Add Task Bar */
+    .add-bar {
+      position: relative;
+      z-index: 1;
+      padding: 24px 40px;
+      background: rgba(0,0,0,0.3);
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .add-bar input, .add-bar select {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 16px;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .add-bar input:focus, .add-bar select:focus {
+      border-color: #00aaff;
+    }
+    .add-bar input.task-name { flex: 1; min-width: 200px; }
+    .add-bar input[type="date"] { width: 160px; color-scheme: dark; }
+    .add-bar select { width: 140px; }
+    .add-bar select option { background: #1a1a2e; }
+    .add-btn {
+      background: #00aaff;
+      color: #000;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 24px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .add-btn:hover { background: #0088cc; transform: translateY(-1px); }
+
+    /* Board */
+    .board {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      padding: 32px 40px 80px;
+    }
+    .column {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 12px;
+      padding: 20px;
+      min-height: 400px;
+    }
+    .column-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .column-title {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .col-todo .column-title { color: #aaaaaa; }
+    .col-inprogress .column-title { color: #00aaff; }
+    .col-done .column-title { color: #00ff88; }
+    .task-count {
+      font-size: 11px;
+      background: rgba(255,255,255,0.07);
+      color: #666;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    /* Task Card */
+    .task-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s;
+    }
+    .task-card:hover {
+      border-color: rgba(0,170,255,0.2);
+      background: rgba(0,170,255,0.04);
+    }
+    .task-name {
+      font-size: 14px;
+      font-weight: 500;
+      color: #e0e0e0;
+      margin-bottom: 10px;
+      line-height: 1.4;
+    }
+    .task-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .task-deadline {
+      font-size: 11px;
+      color: #666;
+      letter-spacing: 0.5px;
+    }
+    .task-deadline.overdue { color: #ff4444; }
+    .task-deadline.soon { color: #ffaa00; }
+    .priority-badge {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+    .priority-high { background: rgba(255,60,60,0.15); color: #ff6060; }
+    .priority-medium { background: rgba(255,170,0,0.15); color: #ffaa00; }
+    .priority-low { background: rgba(0,255,136,0.15); color: #00ff88; }
+
+    .task-actions {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .action-btn {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: transparent;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .action-btn:hover { color: #fff; border-color: rgba(255,255,255,0.3); }
+    .btn-move-right { color: #00aaff; border-color: rgba(0,170,255,0.2); }
+    .btn-move-right:hover { background: rgba(0,170,255,0.1); }
+    .btn-move-left { color: #aaa; border-color: rgba(255,255,255,0.1); }
+    .btn-delete { color: #ff4444; border-color: rgba(255,60,60,0.2); }
+    .btn-delete:hover { background: rgba(255,60,60,0.1); }
+
+    .empty-col {
+      text-align: center;
+      color: #333;
+      font-size: 12px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 40px 0;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 10;
+      background: rgba(5,5,10,0.95);
+      border-top: 1px solid rgba(0,170,255,0.1);
+      padding: 8px 40px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+    .highlight { color: #00aaff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <h1>📋 PLANNING <span>BOARD</span></h1>
+  </div>
+  <div class="header-right" id="datetime"></div>
+</header>
+
+<div class="add-bar">
+  <input class="task-name" type="text" id="taskName" placeholder="Add a new task..."/>
+  <input type="date" id="taskDeadline"/>
+  <select id="taskPriority">
+    <option value="high">🔴 High Priority</option>
+    <option value="medium" selected>🟡 Medium Priority</option>
+    <option value="low">🟢 Low Priority</option>
+  </select>
+  <button class="add-btn" onclick="addTask()">+ Add Task</button>
+</div>
+
+<div class="board">
+  <div class="column col-todo" id="col-todo">
+    <div class="column-header">
+      <span class="column-title">📌 To Do</span>
+      <span class="task-count" id="count-todo">0</span>
+    </div>
+    <div class="task-list" id="list-todo"></div>
+  </div>
+  <div class="column col-inprogress" id="col-inprogress">
+    <div class="column-header">
+      <span class="column-title">⚙️ In Progress</span>
+      <span class="task-count" id="count-inprogress">0</span>
+    </div>
+    <div class="task-list" id="list-inprogress"></div>
+  </div>
+  <div class="column col-done" id="col-done">
+    <div class="column-header">
+      <span class="column-title">✅ Done</span>
+      <span class="task-count" id="count-done">0</span>
+    </div>
+    <div class="task-list" id="list-done"></div>
+  </div>
+</div>
+
+<footer>
+  <span>MY WORK HUB <span class="highlight">— Planning Board</span></span>
+  <span id="footer-date"></span>
+  <span id="total-tasks">0 Tasks Total</span>
+</footer>
+
+<script>
+  // Load tasks from localStorage
+  let tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
+
+  function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+  }
+
+  function addTask() {
+    const name = document.getElementById('taskName').value.trim();
+    const deadline = document.getElementById('taskDeadline').value;
+    const priority = document.getElementById('taskPriority').value;
+    if (!name) { alert('Please enter a task name!'); return; }
+    const task = {
+      id: Date.now(),
+      name,
+      deadline,
+      priority,
+      status: 'todo'
+    };
+    tasks.push(task);
+    saveTasks();
+    renderTasks();
+    document.getElementById('taskName').value = '';
+    document.getElementById('taskDeadline').value = '';
+  }
+
+  function moveTask(id, direction) {
+    const order = ['todo', 'inprogress', 'done'];
+    const task = tasks.find(t => t.id === id);
+    const idx = order.indexOf(task.status);
+    if (direction === 'right' && idx < 2) task.status = order[idx + 1];
+    if (direction === 'left' && idx > 0) task.status = order[idx - 1];
+    saveTasks();
+    renderTasks();
+  }
+
+  function deleteTask(id) {
+    if (confirm('Delete this task?')) {
+      tasks = tasks.filter(t => t.id !== id);
+      saveTasks();
+      renderTasks();
+    }
+  }
+
+  function getDeadlineClass(deadline) {
+    if (!deadline) return '';
+    const today = new Date();
+    const due = new Date(deadline);
+    const diff = (due - today) / (1000 * 60 * 60 * 24);
+    if (diff < 0) return 'overdue';
+    if (diff <= 3) return 'soon';
+    return '';
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return 'No deadline';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('en-MY', { day: 'numeric', month: 'short', year: 'numeric' });
+  }
+
+  function renderTasks() {
+    const lists = { todo: '', inprogress: '', done: '' };
+    const counts = { todo: 0, inprogress: 0, done: 0 };
+
+    tasks.forEach(task => {
+      counts[task.status]++;
+      const dlClass = getDeadlineClass(task.deadline);
+      const showLeft = task.status !== 'todo';
+      const showRight = task.status !== 'done';
+      lists[task.status] += `
+        <div class="task-card">
+          <div class="task-name">${task.name}</div>
+          <div class="task-meta">
+            <span class="task-deadline ${dlClass}">📅 ${formatDate(task.deadline)}</span>
+            <span class="priority-badge priority-${task.priority}">${task.priority}</span>
+          </div>
+          <div class="task-actions">
+            ${showLeft ? `<button class="action-btn btn-move-left" onclick="moveTask(${task.id}, 'left')">← Back</button>` : ''}
+            ${showRight ? `<button class="action-btn btn-move-right" onclick="moveTask(${task.id}, 'right')">→ Move</button>` : ''}
+            <button class="action-btn btn-delete" onclick="deleteTask(${task.id})">🗑 Delete</button>
+          </div>
+        </div>`;
+    });
+
+    ['todo', 'inprogress', 'done'].forEach(col => {
+      document.getElementById(`list-${col}`).innerHTML =
+        lists[col] || '<div class="empty-col">No tasks</div>';
+      document.getElementById(`count-${col}`).textContent = counts[col];
+    });
+
+    document.getElementById('total-tasks').textContent =
+      `${tasks.length} Task${tasks.length !== 1 ? 's' : ''} Total`;
+  }
+
+  // Enter key to add task
+  document.getElementById('taskName').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') addTask();
+  });
+
+  // Clock
+  function updateTime() {
+    const now = new Date();
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    document.getElementById('datetime').textContent = now.toLocaleDateString('en-MY', options);
+    document.getElementById('footer-date').textContent = now.toLocaleDateString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' });
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  renderTasks();
+</script>
+</body>
+</html>
