@@ -79,16 +79,21 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0.3; }
     }
-    .date-time { font-size: 12px; color: #555; letter-spacing: 0.5px; }
+    .date-time { font-size: 12px; color: #aaa; letter-spacing: 0.5px; }
 
-    /* Hero Greeting */
+    /* Hero */
     .hero {
       position: relative;
       z-index: 1;
       padding: 48px 48px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
     }
+    .hero-left { flex: 1; }
     .greeting {
-      font-size: 32px;
+      font-size: 36px;
       font-weight: 700;
       color: #ffffff;
       letter-spacing: 0.3px;
@@ -96,16 +101,71 @@
     .greeting span { color: #00aaff; }
     .greeting-sub {
       font-size: 14px;
-      color: #555;
-      margin-top: 8px;
+      color: #666;
+      margin-top: 10px;
       letter-spacing: 0.3px;
+    }
+
+    /* Planet Glow */
+    .hero-right {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 180px;
+      position: relative;
+    }
+    .planet-glow {
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at 50% 55%,
+        rgba(0, 170, 255, 0.3) 0%,
+        rgba(0, 100, 200, 0.18) 30%,
+        rgba(0, 50, 150, 0.08) 60%,
+        transparent 75%
+      );
+      box-shadow:
+        0 0 80px rgba(0, 170, 255, 0.25),
+        0 0 160px rgba(0, 100, 255, 0.12),
+        inset 0 -20px 40px rgba(0, 170, 255, 0.2);
+      position: relative;
+      animation: floatGlow 4s ease-in-out infinite;
+    }
+    .planet-glow::before {
+      content: '';
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(0,170,255,0.6), transparent);
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+    .planet-glow::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 340px;
+      height: 50px;
+      background: rgba(0, 170, 255, 0.12);
+      border-radius: 50%;
+      filter: blur(24px);
+    }
+    @keyframes floatGlow {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
     }
 
     /* Modules */
     .main {
       position: relative;
       z-index: 1;
-      padding: 24px 48px 80px;
+      padding: 16px 48px 80px;
     }
     .section-label {
       font-size: 11px;
@@ -205,7 +265,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 11px;
-      color: #444;
+      color: #555;
       letter-spacing: 0.5px;
     }
     .highlight { color: #00aaff; }
@@ -228,8 +288,13 @@
   </header>
 
   <div class="hero">
-    <div class="greeting" id="greeting">Good morning, <span>Eric.</span></div>
-    <div class="greeting-sub">Here's your personal command center. What are we working on today?</div>
+    <div class="hero-left">
+      <div class="greeting" id="greeting">Good afternoon, <span>Eric.</span></div>
+      <div class="greeting-sub">Here's your personal command center. What are we working on today?</div>
+    </div>
+    <div class="hero-right">
+      <div class="planet-glow"></div>
+    </div>
   </div>
 
   <div class="main">
