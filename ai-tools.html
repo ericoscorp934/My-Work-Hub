@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 170, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 170, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 20px 40px;
+      border-bottom: 1px solid rgba(0, 170, 255, 0.15);
+      background: rgba(10, 10, 20, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .back-btn {
+      color: #00aaff;
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 1; }
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.5px;
+    }
+    header h1 span { color: #00aaff; }
+    .header-right {
+      font-size: 11px;
+      color: #555;
+      letter-spacing: 1px;
+    }
+
+    /* Tool Tabs */
+    .tabs {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 4px;
+      padding: 20px 40px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.2);
+    }
+    .tab {
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: #aaa; }
+    .tab.active {
+      color: #00aaff;
+      border-bottom-color: #00aaff;
+    }
+
+    /* Main Content */
+    .main {
+      position: relative;
+      z-index: 1;
+      padding: 32px 40px 80px;
+    }
+
+    .tool-panel { display: none; }
+    .tool-panel.active { display: block; }
+
+    .tool-description {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 24px;
+      letter-spacing: 0.3px;
+      line-height: 1.6;
+    }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+    .input-label {
+      font-size: 11px;
+      color: #00aaff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+    textarea, input[type="text"], select {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 14px 16px;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+      resize: vertical;
+    }
+    textarea:focus, input[type="text"]:focus, select:focus {
+      border-color: rgba(0,170,255,0.4);
+    }
+    select option { background: #1a1a2e; }
+
+    .row-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .generate-btn {
+      background: linear-gradient(135deg, #00aaff, #0066cc);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 13px 32px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      transition: all 0.3s;
+      margin-top: 8px;
+    }
+    .generate-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,170,255,0.3);
+    }
+    .generate-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* Output Box */
+    .output-section {
+      margin-top: 28px;
+    }
+    .output-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .output-label {
+      font-size: 11px;
+      color: #00aaff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .copy-btn {
+      font-size: 11px;
+      color: #555;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .copy-btn:hover { color: #00aaff; border-color: rgba(0,170,255,0.3); }
+
+    .output-box {
+      background: rgba(0,170,255,0.03);
+      border: 1px solid rgba(0,170,255,0.1);
+      border-radius: 10px;
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #ccc;
+      min-height: 200px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #555;
+      font-size: 13px;
+    }
+    .loading-dot {
+      width: 6px; height: 6px;
+      background: #00aaff;
+      border-radius: 50%;
+      animation: bounce 1s infinite;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    .placeholder-text {
+      color: #333;
+      font-size: 13px;
+      text-align: center;
+      padding: 40px 0;
+      letter-spacing: 0.5px;
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 10;
+      background: rgba(5,5,10,0.95);
+      border-top: 1px solid rgba(0,170,255,0.1);
+      padding: 8px 40px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+    .highlight { color: #00aaff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <h1>🤖 AI <span>TOOLS</span></h1>
+  </div>
+  <div class="header-right" id="datetime"></div>
+</header>
+
+<!-- Tabs -->
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('email')">📧 Email Drafter</div>
+  <div class="tab" onclick="switchTab('summarizer')">📄 Doc Summarizer</div>
+  <div class="tab" onclick="switchTab('video')">🎬 Video Prompt</div>
+  <div class="tab" onclick="switchTab('aiprompt')">🤖 AI Prompt</div>
+</div>
+
+<div class="main">
+
+  <!-- EMAIL DRAFTER -->
+  <div class="tool-panel active" id="panel-email">
+    <p class="tool-description">Describe what your email is about and who it's for — AI will write a professional email for you.</p>
+    <div class="row-inputs">
+      <div class="input-group">
+        <label class="input-label">Email Purpose</label>
+        <input type="text" id="email-purpose" placeholder="e.g. Follow up on pending approval"/>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Recipient & Context</label>
+        <input type="text" id="email-recipient" placeholder="e.g. My manager, regarding Q3 report"/>
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Tone</label>
+      <select id="email-tone">
+        <option value="professional">Professional & Formal</option>
+        <option value="friendly">Friendly & Warm</option>
+        <option value="assertive">Assertive & Direct</option>
+        <option value="apologetic">Apologetic & Polite</option>
+      </select>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Key Points to Include</label>
+      <textarea id="email-points" rows="3" placeholder="e.g. - Meeting was postponed&#10;- Need confirmation by Friday&#10;- Attach updated report"></textarea>
+    </div>
+    <button class="generate-btn" onclick="generate('email')">⚡ Generate Email</button>
+    <div class="output-section">
+      <div class="output-header">
+        <span class="output-label">Generated Email</span>
+        <button class="copy-btn" onclick="copyOutput('email-output')">Copy</button>
+      </div>
+      <div class="output-box" id="email-output">
+        <div class="placeholder-text">Your generated email will appear here...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCUMENT SUMMARIZER -->
+  <div class="tool-panel" id="panel-summarizer">
+    <p class="tool-description">Paste any long document, report or article — AI will give you a clean, structured summary.</p>
+    <div class="input-group">
+      <label class="input-label">Paste Your Document</label>
+      <textarea id="doc-content" rows="8" placeholder="Paste your document content here..."></textarea>
+    </div>
+    <div class="row-inputs">
+      <div class="input-group">
+        <label class="input-label">Summary Length</label>
+        <select id="doc-length">
+          <option value="brief">Brief (3-5 points)</option>
+          <option value="standard" selected>Standard (1 paragraph)</option>
+          <option value="detailed">Detailed (full breakdown)</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Focus Area</label>
+        <select id="doc-focus">
+          <option value="general">General Overview</option>
+          <option value="action">Action Items Only</option>
+          <option value="decisions">Key Decisions</option>
+          <option value="financial">Financial Highlights</option>
+        </select>
+      </div>
+    </div>
+    <button class="generate-btn" onclick="generate('summarizer')">⚡ Summarize Document</button>
+    <div class="output-section">
+      <div class="output-header">
+        <span class="output-label">Summary</span>
+        <button class="copy-btn" onclick="copyOutput('summarizer-output')">Copy</button>
+      </div>
+      <div class="output-box" id="summarizer-output">
+        <div class="placeholder-text">Your summary will appear here...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- VIDEO PROMPT DRAFTER -->
+  <div class="tool-panel" id="panel-video">
+    <p class="tool-description">Describe your video idea and AI will generate a detailed, production-ready video prompt.</p>
+    <div class="input-group">
+      <label class="input-label">Video Concept</label>
+      <input type="text" id="video-concept" placeholder="e.g. A cinematic product reveal for a luxury watch"/>
+    </div>
+    <div class="row-inputs">
+      <div class="input-group">
+        <label class="input-label">Video Style</label>
+        <select id="video-style">
+          <option value="cinematic">Cinematic & Epic</option>
+          <option value="corporate">Corporate & Professional</option>
+          <option value="social">Social Media / Viral</option>
+          <option value="documentary">Documentary Style</option>
+          <option value="animation">Animation / Motion Graphics</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Target Platform</label>
+        <select id="video-platform">
+          <option value="youtube">YouTube</option>
+          <option value="instagram">Instagram / TikTok</option>
+          <option value="linkedin">LinkedIn</option>
+          <option value="presentation">Presentation / Internal</option>
+        </select>
+      </div>
+    </div>
+    <div class="input-group">
+      <label class="input-label">Additional Details</label>
+      <textarea id="video-details" rows="3" placeholder="e.g. Target audience, mood, key message, duration..."></textarea>
+    </div>
+    <button class="generate-btn" onclick="generate('video')">⚡ Generate Video Prompt</button>
+    <div class="output-section">
+      <div class="output-header">
+        <span class="output-label">Video Prompt</span>
+        <button class="copy-btn" onclick="copyOutput('video-output')">Copy</button>
+      </div>
+      <div class="output-box" id="video-output">
+        <div class="placeholder-text">Your video prompt will appear here...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI PROMPT DRAFTER -->
+  <div class="tool-panel" id="panel-aiprompt">
+    <p class="tool-description">Describe what you want AI to do — this tool will write you the perfect, detailed prompt to get the best results.</p>
+    <div class="input-group">
+      <label class="input-label">What Do You Need AI To Do?</label>
+      <textarea id="aiprompt-goal" rows="3" placeholder="e.g. I want AI to help me write a weekly report for my team summarizing our project progress..."></textarea>
+    </div>
+    <div class="row-inputs">
+      <div class="input-group">
+        <label class="input-label">AI Tool You'll Use</label>
+        <select id="aiprompt-tool">
+          <option value="claude">Claude</option>
+          <option value="chatgpt">ChatGPT</option>
+          <option value="midjourney">Midjourney (Image)</option>
+          <option value="runway">Runway (Video)</option>
+          <option value="general">General / Any AI</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label class="input-label">Output Format</label>
+        <select id="aiprompt-format">
+          <option value="detailed">Detailed & Comprehensive</option>
+          <option value="concise">Concise & Direct</option>
+          <option value="structured">Structured with Headers</option>
+          <option value="bullets">Bullet Points</option>
+        </select>
+      </div>
+    </div>
+    <button class="generate-btn" onclick="generate('aiprompt')">⚡ Generate AI Prompt</button>
+    <div class="output-section">
+      <div class="output-header">
+        <span class="output-label">Your AI Prompt</span>
+        <button class="copy-btn" onclick="copyOutput('aiprompt-output')">Copy</button>
+      </div>
+      <div class="output-box" id="aiprompt-output">
+        <div class="placeholder-text">Your generated prompt will appear here...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>MY WORK HUB <span class="highlight">— AI Tools</span></span>
+  <span id="footer-date"></span>
+  <span>4 Tools Active</span>
+</footer>
+
+<script>
+  // Tab switching
+  function switchTab(tab) {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
+    event.target.classList.add('active');
+    document.getElementById('panel-' + tab).classList.add('active');
+  }
+
+  // Copy output
+  function copyOutput(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      alert('Copied to clipboard!');
+    });
+  }
+
+  // Show loading
+  function showLoading(outputId) {
+    document.getElementById(outputId).innerHTML = `
+      <div class="loading">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <span style="margin-left:8px;">AI is generating...</span>
+      </div>`;
+  }
+
+  // Main generate function
+  async function generate(tool) {
+    let prompt = '';
+    let outputId = '';
+
+    if (tool === 'email') {
+      const purpose = document.getElementById('email-purpose').value.trim();
+      const recipient = document.getElementById('email-recipient').value.trim();
+      const tone = document.getElementById('email-tone').value;
+      const points = document.getElementById('email-points').value.trim();
+      if (!purpose) { alert('Please enter the email purpose!'); return; }
+      outputId = 'email-output';
+      prompt = `Write a ${tone} professional email with the following details:
+Purpose: ${purpose}
+Recipient/Context: ${recipient}
+Key points to include: ${points}
+Format it with Subject line, greeting, body, and sign-off. Keep it clear and concise.`;
+
+    } else if (tool === 'summarizer') {
+      const content = document.getElementById('doc-content').value.trim();
+      const length = document.getElementById('doc-length').value;
+      const focus = document.getElementById('doc-focus').value;
+      if (!content) { alert('Please paste your document content!'); return; }
+      outputId = 'summarizer-output';
+      prompt = `Summarize the following document. 
+Summary length: ${length}
+Focus on: ${focus}
+Document: ${content}
+Provide a clean, structured summary.`;
+
+    } else if (tool === 'video') {
+      const concept = document.getElementById('video-concept').value.trim();
+      const style = document.getElementById('video-style').value;
+      const platform = document.getElementById('video-platform').value;
+      const details = document.getElementById('video-details').value.trim();
+      if (!concept) { alert('Please enter your video concept!'); return; }
+      outputId = 'video-output';
+      prompt = `Write a detailed, production-ready video prompt for the following:
+Concept: ${concept}
+Style: ${style}
+Platform: ${platform}
+Additional details: ${details}
+Include: scene descriptions, camera angles, mood, pacing, music suggestions, and visual style guide.`;
+
+    } else if (tool === 'aiprompt') {
+      const goal = document.getElementById('aiprompt-goal').value.trim();
+      const aitool = document.getElementById('aiprompt-tool').value;
+      const format = document.getElementById('aiprompt-format').value;
+      if (!goal) { alert('Please describe what you need AI to do!'); return; }
+      outputId = 'aiprompt-output';
+      prompt = `Create a detailed, effective AI prompt for the following goal:
+Goal: ${goal}
+AI Tool: ${aitool}
+Desired output format: ${format}
+Write a complete, optimized prompt that will get the best possible results from the AI.`;
+    }
+
+    showLoading(outputId);
+
+    try {
+      const response = await fetch('https://api.anthropic.com/v1/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514',
+          max_tokens: 1000,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await response.json();
+      const result = data.content?.[0]?.text || 'No response received. Please try again.';
+      document.getElementById(outputId).innerText = result;
+    } catch (err) {
+      document.getElementById(outputId).innerText = '❌ Error connecting to AI. Please try again.';
+    }
+  }
+
+  // Clock
+  function updateTime() {
+    const now = new Date();
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    document.getElementById('datetime').textContent = now.toLocaleDateString('en-MY', options);
+    document.getElementById('footer-date').textContent = now.toLocaleDateString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' });
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+</script>
+</body>
+</html>
