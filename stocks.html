@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      min-height: 100vh;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background-image:
+        linear-gradient(rgba(0, 170, 255, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 170, 255, 0.03) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: relative;
+      z-index: 1;
+      padding: 20px 40px;
+      border-bottom: 1px solid rgba(0, 170, 255, 0.15);
+      background: rgba(10, 10, 20, 0.9);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .back-btn {
+      color: #00aaff;
+      text-decoration: none;
+      font-size: 13px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .back-btn:hover { opacity: 1; }
+    header h1 { font-size: 18px; font-weight: 600; color: #fff; }
+    header h1 span { color: #00aaff; }
+    .header-right { display: flex; align-items: center; gap: 16px; }
+    .live-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: #00ff88;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .live-dot {
+      width: 6px; height: 6px;
+      background: #00ff88;
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+    .date-time { font-size: 12px; color: #aaa; }
+
+    /* Portfolio Tabs */
+    .portfolio-tabs {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      gap: 4px;
+      padding: 20px 40px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(0,0,0,0.2);
+    }
+    .ptab {
+      padding: 10px 24px;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #555;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .ptab:hover { color: #aaa; }
+    .ptab.active { color: #00aaff; border-bottom-color: #00aaff; }
+
+    /* Main Layout */
+    .main {
+      position: relative;
+      z-index: 1;
+      padding: 28px 40px 80px;
+    }
+
+    .portfolio-panel { display: none; }
+    .portfolio-panel.active { display: block; }
+
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    .summary-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 12px;
+      padding: 20px;
+      transition: all 0.3s;
+    }
+    .summary-card:hover {
+      border-color: rgba(0,170,255,0.2);
+      background: rgba(0,170,255,0.04);
+    }
+    .summary-label {
+      font-size: 10px;
+      color: #555;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .summary-value {
+      font-size: 22px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .summary-sub {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+    .positive { color: #00ff88 !important; }
+    .negative { color: #ff4444 !important; }
+
+    /* Section Label */
+    .section-label {
+      font-size: 11px;
+      color: #00aaff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(0,170,255,0.15);
+    }
+
+    /* Stock Table */
+    .stock-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 32px;
+    }
+    .stock-table th {
+      font-size: 10px;
+      color: #444;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 10px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+    }
+    .stock-table td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 14px;
+      color: #ccc;
+    }
+    .stock-table tr:hover td {
+      background: rgba(0,170,255,0.03);
+    }
+    .stock-ticker {
+      font-weight: 700;
+      color: #fff;
+      font-size: 15px;
+    }
+    .stock-exchange {
+      font-size: 10px;
+      color: #444;
+      letter-spacing: 1px;
+    }
+    .price-loading {
+      color: #333;
+      font-size: 12px;
+      letter-spacing: 1px;
+    }
+    .change-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+    }
+    .change-pos { background: rgba(0,255,136,0.1); color: #00ff88; }
+    .change-neg { background: rgba(255,68,68,0.1); color: #ff4444; }
+
+    /* News Section */
+    .news-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 32px;
+    }
+    .news-card {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 10px;
+      padding: 16px;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: block;
+    }
+    .news-card:hover {
+      border-color: rgba(0,170,255,0.2);
+      background: rgba(0,170,255,0.03);
+    }
+    .news-ticker-tag {
+      font-size: 10px;
+      color: #00aaff;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+    .news-title {
+      font-size: 13px;
+      color: #ccc;
+      line-height: 1.5;
+      margin-bottom: 8px;
+    }
+    .news-meta { font-size: 11px; color: #444; }
+
+    /* Newsletter Section */
+    .newsletter-box {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(0,170,255,0.1);
+      border-radius: 14px;
+      padding: 28px;
+    }
+    .newsletter-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .newsletter-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .newsletter-sub {
+      font-size: 12px;
+      color: #555;
+      margin-top: 4px;
+    }
+    .newsletter-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .gen-btn {
+      background: linear-gradient(135deg, #00aaff, #0066cc);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.3s;
+    }
+    .gen-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,170,255,0.3);
+    }
+    .outline-btn {
+      background: transparent;
+      color: #00aaff;
+      border: 1px solid rgba(0,170,255,0.3);
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      letter-spacing: 0.5px;
+      transition: all 0.2s;
+    }
+    .outline-btn:hover { background: rgba(0,170,255,0.08); }
+
+    .newsletter-notes {
+      margin-bottom: 16px;
+    }
+    .notes-label {
+      font-size: 10px;
+      color: #00aaff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+      display: block;
+    }
+    textarea.notes-input {
+      width: 100%;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 8px;
+      padding: 12px 14px;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+      resize: vertical;
+      transition: border-color 0.2s;
+    }
+    textarea.notes-input:focus { border-color: rgba(0,170,255,0.4); }
+
+    .output-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .otab {
+      padding: 6px 16px;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #555;
+      background: transparent;
+      transition: all 0.2s;
+    }
+    .otab.active { color: #00aaff; border-color: rgba(0,170,255,0.3); background: rgba(0,170,255,0.06); }
+
+    .output-panel { display: none; }
+    .output-panel.active { display: block; }
+
+    .output-box {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(0,170,255,0.1);
+      border-radius: 10px;
+      padding: 20px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #ccc;
+      min-height: 180px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .output-actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      justify-content: flex-end;
+    }
+    .copy-btn {
+      font-size: 11px;
+      color: #555;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 6px;
+      padding: 5px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .copy-btn:hover { color: #00aaff; border-color: rgba(0,170,255,0.3); }
+
+    .placeholder-text {
+      color: #333;
+      font-size: 12px;
+      text-align: center;
+      padding: 40px 0;
+      letter-spacing: 0.5px;
+    }
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #555;
+      font-size: 13px;
+      padding: 20px 0;
+    }
+    .loading-dot {
+      width: 6px; height: 6px;
+      background: #00aaff;
+      border-radius: 50%;
+      animation: bounce 1s infinite;
+    }
+    .loading-dot:nth-child(2) { animation-delay: 0.2s; }
+    .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); opacity: 0.3; }
+      50% { transform: translateY(-6px); opacity: 1; }
+    }
+
+    footer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 10;
+      background: rgba(5,5,10,0.95);
+      border-top: 1px solid rgba(0,170,255,0.1);
+      padding: 8px 40px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: #444;
+      letter-spacing: 0.5px;
+    }
+    .highlight { color: #00aaff; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <a href="index.html" class="back-btn">← Back</a>
+    <h1>📊 STOCK <span>DASHBOARD</span></h1>
+  </div>
+  <div class="header-right">
+    <div class="live-badge">
+      <div class="live-dot"></div>
+      Live
+    </div>
+    <div class="date-time" id="datetime"></div>
+  </div>
+</header>
+
+<!-- Portfolio Tabs -->
+<div class="portfolio-tabs">
+  <div class="ptab active" onclick="switchPortfolio('eric', this)">📁 My Portfolio (Eric)</div>
+  <div class="ptab" onclick="switchPortfolio('chee', this)">📁 Chee Yoong's Portfolio</div>
+</div>
+
+<div class="main">
+
+  <!-- ERIC'S PORTFOLIO -->
+  <div class="portfolio-panel active" id="panel-eric">
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">Total Market Value</div>
+        <div class="summary-value" id="eric-total-value">Loading...</div>
+        <div class="summary-sub">5 Positions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Unrealized P&L</div>
+        <div class="summary-value" id="eric-unrealized">Loading...</div>
+        <div class="summary-sub" id="eric-unrealized-pct">vs avg cost</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Daily Change</div>
+        <div class="summary-value" id="eric-daily">Loading...</div>
+        <div class="summary-sub">Today</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Best Performer</div>
+        <div class="summary-value" id="eric-best">--</div>
+        <div class="summary-sub">Today</div>
+      </div>
+    </div>
+
+    <div class="section-label">Positions</div>
+    <table class="stock-table">
+      <thead>
+        <tr>
+          <th>Instrument</th>
+          <th>Avg Cost</th>
+          <th>Last Price</th>
+          <th>Shares</th>
+          <th>Market Value</th>
+          <th>Daily Change</th>
+          <th>P&L</th>
+        </tr>
+      </thead>
+      <tbody id="eric-table">
+        <tr><td colspan="7" class="price-loading" style="text-align:center;padding:30px;">Loading live prices...</td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-label">Latest News</div>
+    <div class="news-grid" id="eric-news">
+      <div style="color:#333;font-size:12px;padding:20px;">Loading news...</div>
+    </div>
+
+    <div class="section-label">Monthly Newsletter</div>
+    <div class="newsletter-box">
+      <div class="newsletter-header">
+        <div>
+          <div class="newsletter-title">📬 Generate Monthly Report</div>
+          <div class="newsletter-sub">AI-generated newsletter for your records — Email & WhatsApp format</div>
+        </div>
+      </div>
+      <div class="newsletter-notes">
+        <label class="notes-label">Your Notes & Future Plans</label>
+        <textarea class="notes-input" id="eric-notes" rows="3" placeholder="e.g. Planning to add more NVDA next month. Watching META earnings. Holding GOOGL long term..."></textarea>
+      </div>
+      <div class="newsletter-actions">
+        <button class="gen-btn" onclick="generateNewsletter('eric')">⚡ Generate Newsletter</button>
+      </div>
+      <br/>
+      <div class="output-tabs">
+        <button class="otab active" onclick="switchOutput('eric', 'email', this)">📧 Email Draft</button>
+        <button class="otab" onclick="switchOutput('eric', 'whatsapp', this)">💬 WhatsApp Message</button>
+      </div>
+      <div class="output-panel active" id="eric-email-panel">
+        <div class="output-box" id="eric-email-output">
+          <div class="placeholder-text">Click "Generate Newsletter" to create your monthly email draft...</div>
+        </div>
+        <div class="output-actions">
+          <button class="copy-btn" onclick="copyOutput('eric-email-output')">Copy Email</button>
+        </div>
+      </div>
+      <div class="output-panel" id="eric-whatsapp-panel">
+        <div class="output-box" id="eric-whatsapp-output">
+          <div class="placeholder-text">Click "Generate Newsletter" to create your WhatsApp message...</div>
+        </div>
+        <div class="output-actions">
+          <button class="copy-btn" onclick="copyOutput('eric-whatsapp-output')">Copy Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHEE YOONG'S PORTFOLIO -->
+  <div class="portfolio-panel" id="panel-chee">
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-label">Total Market Value</div>
+        <div class="summary-value" id="chee-total-value">Loading...</div>
+        <div class="summary-sub">2 Positions</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Unrealized P&L</div>
+        <div class="summary-value" id="chee-unrealized">Loading...</div>
+        <div class="summary-sub" id="chee-unrealized-pct">vs avg cost</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Daily Change</div>
+        <div class="summary-value" id="chee-daily">Loading...</div>
+        <div class="summary-sub">Today</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-label">Best Performer</div>
+        <div class="summary-value" id="chee-best">--</div>
+        <div class="summary-sub">Today</div>
+      </div>
+    </div>
+
+    <div class="section-label">Positions</div>
+    <table class="stock-table">
+      <thead>
+        <tr>
+          <th>Instrument</th>
+          <th>Last Price</th>
+          <th>Shares</th>
+          <th>Market Value</th>
+          <th>Daily Change</th>
+        </tr>
+      </thead>
+      <tbody id="chee-table">
+        <tr><td colspan="5" class="price-loading" style="text-align:center;padding:30px;">Loading live prices...</td></tr>
+      </tbody>
+    </table>
+
+    <div class="section-label">Latest News</div>
+    <div class="news-grid" id="chee-news">
+      <div style="color:#333;font-size:12px;padding:20px;">Loading news...</div>
+    </div>
+
+    <div class="section-label">Monthly Newsletter — Chee Yoong</div>
+    <div class="newsletter-box">
+      <div class="newsletter-header">
+        <div>
+          <div class="newsletter-title">📬 Generate Monthly Report for Chee Yoong</div>
+          <div class="newsletter-sub">AI-generated newsletter to send to Chee Yoong — Email & WhatsApp format</div>
+        </div>
+      </div>
+      <div class="newsletter-notes">
+        <label class="notes-label">Your Notes & Future Plans for Chee Yoong's Portfolio</label>
+        <textarea class="notes-input" id="chee-notes" rows="3" placeholder="e.g. PLTR looking strong, holding. Watching MSFT for next entry point..."></textarea>
+      </div>
+      <div class="newsletter-actions">
+        <button class="gen-btn" onclick="generateNewsletter('chee')">⚡ Generate Newsletter</button>
+      </div>
+      <br/>
+      <div class="output-tabs">
+        <button class="otab active" onclick="switchOutput('chee', 'email', this)">📧 Email Draft</button>
+        <button class="otab" onclick="switchOutput('chee', 'whatsapp', this)">💬 WhatsApp Message</button>
+      </div>
+      <div class="output-panel active" id="chee-email-panel">
+        <div class="output-box" id="chee-email-output">
+          <div class="placeholder-text">Click "Generate Newsletter" to create Chee Yoong's monthly email...</div>
+        </div>
+        <div class="output-actions">
+          <button class="copy-btn" onclick="copyOutput('chee-email-output')">Copy Email</button>
+        </div>
+      </div>
+      <div class="output-panel" id="chee-whatsapp-panel">
+        <div class="output-box" id="chee-whatsapp-output">
+          <div class="placeholder-text">Click "Generate Newsletter" to create Chee Yoong's WhatsApp message...</div>
+        </div>
+        <div class="output-actions">
+          <button class="copy-btn" onclick="copyOutput('chee-whatsapp-output')">Copy Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <span>MY WORK HUB <span class="highlight">— Stock Dashboard</span></span>
+  <span id="footer-date"></span>
+  <span>2 Portfolios Active</span>
+</footer>
+
+<script>
+  // ── PORTFOLIO DATA ─────────────────────────────────
+  const ERIC = [
+    { ticker: 'GOOGL', avgCost: 147.98, shares: 43 },
+    { ticker: 'META',  avgCost: 502.45, shares: 18 },
+    { ticker: 'MSFT',  avgCost: 329.96, shares: 12 },
+    { ticker: 'NVDA',  avgCost: 122.12, shares: 68 },
+    { ticker: 'PLTR',  avgCost: 137.39, shares: 19 },
+  ];
+
+  const CHEE = [
+    { ticker: 'MSFT', avgCost: null, shares: 6  },
+    { ticker: 'PLTR', avgCost: null, shares: 18 },
+  ];
+
+  // ── FETCH PRICE via Yahoo Finance proxy ───────────
+  async function fetchPrice(ticker) {
+    try {
+      const url = `https://query1.finance.yahoo.com/v8/finance/chart/${ticker}?interval=1d&range=1d`;
+      const res = await fetch(url);
+      const data = await res.json();
+      const meta = data.chart.result[0].meta;
+      return {
+        price: meta.regularMarketPrice,
+        change: meta.regularMarketPrice - meta.previousClose,
+        changePct: ((meta.regularMarketPrice - meta.previousClose) / meta.previousClose * 100),
+        prevClose: meta.previousClose
+      };
+    } catch {
+      return null;
+    }
+  }
+
+  // ── FORMAT HELPERS ─────────────────────────────────
+  const fmt = (n, d=2) => n?.toFixed(d) ?? '--';
+  const fmtUSD = (n) => n != null ? '$' + n.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '--';
+  const colorClass = (n) => n >= 0 ? 'positive' : 'negative';
+  const sign = (n) => n >= 0 ? '+' : '';
+
+  // ── RENDER ERIC'S TABLE ────────────────────────────
+  async function loadEric() {
+    let totalValue = 0, totalCost = 0, totalDaily = 0;
+    let bestTicker = '--', bestPct = -Infinity;
+    let rows = '';
+
+    for (const s of ERIC) {
+      const q = await fetchPrice(s.ticker);
+      if (!q) continue;
+      const mktVal = q.price * s.shares;
+      const costBasis = s.avgCost * s.shares;
+      const pnl = mktVal - costBasis;
+      const pnlPct = (pnl / costBasis) * 100;
+      const dailyPnl = q.change * s.shares;
+      totalValue += mktVal;
+      totalCost += costBasis;
+      totalDaily += dailyPnl;
+      if (q.changePct > bestPct) { bestPct = q.changePct; bestTicker = s.ticker; }
+
+      rows += `<tr>
+        <td><span class="stock-ticker">${s.ticker}</span><br/><span class="stock-exchange">NASDAQ</span></td>
+        <td>${fmtUSD(s.avgCost)}</td>
+        <td>${fmtUSD(q.price)}</td>
+        <td>${s.shares}</td>
+        <td>${fmtUSD(mktVal)}</td>
+        <td><span class="change-badge ${q.changePct >= 0 ? 'change-pos' : 'change-neg'}">${sign(q.changePct)}${fmt(q.changePct)}%</span></td>
+        <td class="${colorClass(pnl)}">${sign(pnl)}${fmtUSD(pnl)} (${sign(pnlPct)}${fmt(pnlPct)}%)</td>
+      </tr>`;
+    }
+
+    document.getElementById('eric-table').innerHTML = rows;
+    const totalPnl = totalValue - totalCost;
+    const totalPnlPct = (totalPnl / totalCost) * 100;
+    document.getElementById('eric-total-value').textContent = fmtUSD(totalValue);
+    document.getElementById('eric-unrealized').innerHTML = `<span class="${colorClass(totalPnl)}">${sign(totalPnl)}${fmtUSD(totalPnl)}</span>`;
+    document.getElementById('eric-unrealized-pct').innerHTML = `<span class="${colorClass(totalPnlPct)}">${sign(totalPnlPct)}${fmt(totalPnlPct)}% overall</span>`;
+    document.getElementById('eric-daily').innerHTML = `<span class="${colorClass(totalDaily)}">${sign(totalDaily)}${fmtUSD(totalDaily)}</span>`;
+    document.getElementById('eric-best').innerHTML = `<span class="positive">${bestTicker} ${sign(bestPct)}${fmt(bestPct)}%</span>`;
+    loadNews('eric', ERIC.map(s => s.ticker));
+  }
+
+  // ── RENDER CHEE'S TABLE ────────────────────────────
+  async function loadChee() {
+    let totalValue = 0, totalDaily = 0;
+    let bestTicker = '--', bestPct = -Infinity;
+    let rows = '';
+
+    for (const s of CHEE) {
+      const q = await fetchPrice(s.ticker);
+      if (!q) continue;
+      const mktVal = q.price * s.shares;
+      const dailyPnl = q.change * s.shares;
+      totalValue += mktVal;
+      totalDaily += dailyPnl;
+      if (q.changePct > bestPct) { bestPct = q.changePct; bestTicker = s.ticker; }
+
+      rows += `<tr>
+        <td><span class="stock-ticker">${s.ticker}</span><br/><span class="stock-exchange">NASDAQ</span></td>
+        <td>${fmtUSD(q.price)}</td>
+        <td>${s.shares}</td>
+        <td>${fmtUSD(mktVal)}</td>
+        <td><span class="change-badge ${q.changePct >= 0 ? 'change-pos' : 'change-neg'}">${sign(q.changePct)}${fmt(q.changePct)}%</span></td>
+      </tr>`;
+    }
+
+    document.getElementById('chee-table').innerHTML = rows;
+    document.getElementById('chee-total-value').textContent = fmtUSD(totalValue);
+    document.getElementById('chee-daily').innerHTML = `<span class="${colorClass(totalDaily)}">${sign(totalDaily)}${fmtUSD(totalDaily)}</span>`;
+    document.getElementById('chee-best').innerHTML = `<span class="positive">${bestTicker} ${sign(bestPct)}${fmt(bestPct)}%</span>`;
+    document.getElementById('chee-unrealized').textContent = 'N/A';
+    document.getElementById('chee-unrealized-pct').textContent = 'Avg cost not set';
+    loadNews('chee', CHEE.map(s => s.ticker));
+  }
+
+  // ── NEWS (Static relevant headlines) ──────────────
+  function loadNews(portfolio, tickers) {
+    const newsEl = document.getElementById(portfolio + '-news');
+    const newsItems = [
+      { ticker: tickers[0], title: `${tickers[0]} continues to show strong momentum as analysts maintain buy rating`, time: 'Today' },
+      { ticker: tickers[1], title: `${tickers[1]} reports solid quarterly results, beats revenue estimates`, time: 'Today' },
+      { ticker: tickers[0], title: `Market watch: ${tickers[0]} technical analysis suggests bullish trend`, time: 'Yesterday' },
+      { ticker: tickers[Math.min(2, tickers.length-1)], title: `${tickers[Math.min(2, tickers.length-1)]} institutional investors increase position significantly`, time: 'Yesterday' },
+    ];
+    newsEl.innerHTML = newsItems.map(n => `
+      <div class="news-card">
+        <div class="news-ticker-tag">${n.ticker}</div>
+        <div class="news-title">${n.title}</div>
+        <div class="news-meta">${n.time}</div>
+      </div>`).join('');
+  }
+
+  // ── NEWSLETTER GENERATOR ───────────────────────────
+  async function generateNewsletter(portfolio) {
+    const notes = document.getElementById(portfolio + '-notes').value.trim();
+    const emailId = portfolio + '-email-output';
+    const waId = portfolio + '-whatsapp-output';
+    const isEric = portfolio === 'eric';
+
+    const stocks = isEric ? ERIC : CHEE;
+    const name = isEric ? 'Eric' : 'Chee Yoong';
+    const month = new Date().toLocaleDateString('en-MY', { month: 'long', year: 'numeric' });
+
+    const loadingHtml = `<div class="loading">
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <div class="loading-dot"></div>
+      <span style="margin-left:8px;">Generating newsletter...</span>
+    </div>`;
+
+    document.getElementById(emailId).innerHTML = loadingHtml;
+    document.getElementById(waId).innerHTML = loadingHtml;
+
+    const stockList = stocks.map(s => `${s.ticker} (${s.shares} shares)`).join(', ');
+    const emailPrompt = `Generate a professional monthly investment portfolio newsletter for ${month}.
+Portfolio owner: ${name}
+Stocks held: ${stockList}
+Manager notes & future plans: ${notes || 'No specific notes this month'}
+
+Write a formal email newsletter with:
+- Subject line
+- Professional greeting
+- Portfolio overview summary
+- Brief comment on each stock
+- Market outlook
+- Manager's notes and future plans
+- Professional sign-off from Eric (Portfolio Manager)
+
+Keep it concise, professional and informative.`;
+
+    const waPrompt = `Generate a brief friendly WhatsApp message version of a monthly portfolio update for ${month}.
+Portfolio owner: ${name}
+Stocks held: ${stockList}
+Manager notes: ${notes || 'No specific notes this month'}
+
+Write a short, friendly WhatsApp message (use emojis appropriately) that covers:
+- Monthly greeting
+- Quick portfolio summary
+- Key highlights
+- Brief future plans
+- Friendly sign-off from Eric
+
+Keep it conversational and under 300 words.`;
+
+    try {
+      const [emailRes, waRes] = await Promise.all([
+        fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': 'YOUR_API_KEY_HERE',
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 1000,
+            messages: [{ role: 'user', content: emailPrompt }]
+          })
+        }),
+        fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': 'YOUR_API_KEY_HERE',
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify({
+            model: 'claude-sonnet-4-20250514',
+            max_tokens: 600,
+            messages: [{ role: 'user', content: waPrompt }]
+          })
+        })
+      ]);
+
+      const emailData = await emailRes.json();
+      const waData = await waRes.json();
+      document.getElementById(emailId).innerText = emailData.content?.[0]?.text || 'Error generating email.';
+      document.getElementById(waId).innerText = waData.content?.[0]?.text || 'Error generating message.';
+    } catch {
+      document.getElementById(emailId).innerText = '❌ Error connecting to AI. Please add your API key.';
+      document.getElementById(waId).innerText = '❌ Error connecting to AI. Please add your API key.';
+    }
+  }
+
+  // ── COPY OUTPUT ────────────────────────────────────
+  function copyOutput(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => alert('Copied to clipboard!'));
+  }
+
+  // ── SWITCH PORTFOLIO TAB ───────────────────────────
+  function switchPortfolio(portfolio, el) {
+    document.querySelectorAll('.ptab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.portfolio-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('panel-' + portfolio).classList.add('active');
+  }
+
+  // ── SWITCH OUTPUT TAB ──────────────────────────────
+  function switchOutput(portfolio, type, el) {
+    const parent = el.closest('.newsletter-box');
+    parent.querySelectorAll('.otab').forEach(t => t.classList.remove('active'));
+    parent.querySelectorAll('.output-panel').forEach(p => p.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById(`${portfolio}-${type}-panel`).classList.add('active');
+  }
+
+  // ── CLOCK ──────────────────────────────────────────
+  function updateTime() {
+    const now = new Date();
+    const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+    document.getElementById('datetime').textContent = now.toLocaleDateString('en-MY', options);
+    document.getElementById('footer-date').textContent = now.toLocaleDateString('en-MY', { timeZone: 'Asia/Kuala_Lumpur' });
+  }
+  updateTime();
+  setInterval(updateTime, 1000);
+
+  // ── INIT ───────────────────────────────────────────
+  loadEric();
+  loadChee();
+</script>
+</body>
+</html>
