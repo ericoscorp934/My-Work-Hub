@@ -12,6 +12,8 @@
       background: #0a0a0f;
       color: #e0e0e0;
       min-height: 100vh;
+      display: flex;
+      flex-direction: column;
     }
     body::before {
       content: '';
@@ -35,12 +37,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      flex-shrink: 0;
     }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
     .back-btn {
       color: #00aaff;
       text-decoration: none;
@@ -51,32 +50,40 @@
       transition: opacity 0.2s;
     }
     .back-btn:hover { opacity: 1; }
-    header h1 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #ffffff;
-      letter-spacing: 0.5px;
-    }
+    header h1 { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: 0.5px; }
     header h1 span { color: #00aaff; }
-    .header-right {
-      font-size: 11px;
-      color: #555;
-      letter-spacing: 1px;
-    }
+    .header-right { font-size: 11px; color: #555; letter-spacing: 1px; }
 
-    /* Tool Tabs */
-    .tabs {
+    /* Layout */
+    .layout {
       position: relative;
       z-index: 1;
       display: flex;
+      flex: 1;
+      overflow: hidden;
+      height: calc(100vh - 65px - 37px);
+    }
+
+    /* LEFT PANEL - Tools */
+    .left-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-right: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .tabs {
+      display: flex;
       gap: 4px;
-      padding: 20px 40px 0;
+      padding: 16px 24px 0;
       border-bottom: 1px solid rgba(255,255,255,0.06);
       background: rgba(0,0,0,0.2);
+      flex-shrink: 0;
     }
     .tab {
-      padding: 10px 20px;
-      font-size: 12px;
+      padding: 8px 16px;
+      font-size: 11px;
       font-weight: 500;
       letter-spacing: 1px;
       text-transform: uppercase;
@@ -84,48 +91,45 @@
       cursor: pointer;
       border-bottom: 2px solid transparent;
       transition: all 0.2s;
+      white-space: nowrap;
     }
     .tab:hover { color: #aaa; }
-    .tab.active {
-      color: #00aaff;
-      border-bottom-color: #00aaff;
-    }
+    .tab.active { color: #00aaff; border-bottom-color: #00aaff; }
 
-    /* Main Content */
-    .main {
-      position: relative;
-      z-index: 1;
-      padding: 32px 40px 80px;
+    .tool-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 24px;
     }
+    .tool-area::-webkit-scrollbar { width: 4px; }
+    .tool-area::-webkit-scrollbar-track { background: transparent; }
+    .tool-area::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
 
     .tool-panel { display: none; }
     .tool-panel.active { display: block; }
 
     .tool-description {
       font-size: 13px;
-      color: #666;
-      margin-bottom: 24px;
-      letter-spacing: 0.3px;
+      color: #777;
+      margin-bottom: 20px;
       line-height: 1.6;
     }
 
-    .input-group {
-      margin-bottom: 16px;
-    }
+    .input-group { margin-bottom: 14px; }
     .input-label {
-      font-size: 11px;
+      font-size: 10px;
       color: #00aaff;
       letter-spacing: 2px;
       text-transform: uppercase;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       display: block;
     }
     textarea, input[type="text"], select {
       width: 100%;
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 10px;
-      padding: 14px 16px;
+      border-radius: 8px;
+      padding: 12px 14px;
       color: #e0e0e0;
       font-family: 'Inter', sans-serif;
       font-size: 13px;
@@ -137,56 +141,41 @@
       border-color: rgba(0,170,255,0.4);
     }
     select option { background: #1a1a2e; }
-
-    .row-inputs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-    }
+    .row-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 
     .generate-btn {
       background: linear-gradient(135deg, #00aaff, #0066cc);
       color: #fff;
       border: none;
-      border-radius: 10px;
-      padding: 13px 32px;
-      font-size: 13px;
+      border-radius: 8px;
+      padding: 11px 28px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       letter-spacing: 1px;
       text-transform: uppercase;
       transition: all 0.3s;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .generate-btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 8px 24px rgba(0,170,255,0.3);
     }
-    .generate-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
-    }
 
-    /* Output Box */
-    .output-section {
-      margin-top: 28px;
-    }
+    .output-section { margin-top: 20px; }
     .output-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
-    .output-label {
+    .output-label { font-size: 10px; color: #00aaff; letter-spacing: 2px; text-transform: uppercase; }
+    .output-actions { display: flex; gap: 8px; align-items: center; }
+
+    .copy-btn, .save-trigger-btn {
       font-size: 11px;
-      color: #00aaff;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    .copy-btn {
-      font-size: 11px;
-      color: #555;
       background: transparent;
       border: 1px solid rgba(255,255,255,0.1);
       border-radius: 6px;
@@ -195,27 +184,37 @@
       transition: all 0.2s;
       letter-spacing: 0.5px;
     }
+    .copy-btn { color: #555; }
     .copy-btn:hover { color: #00aaff; border-color: rgba(0,170,255,0.3); }
+    .save-trigger-btn { color: #00ff88; border-color: rgba(0,255,136,0.2); }
+    .save-trigger-btn:hover { background: rgba(0,255,136,0.08); }
 
     .output-box {
       background: rgba(0,170,255,0.03);
       border: 1px solid rgba(0,170,255,0.1);
       border-radius: 10px;
-      padding: 20px;
+      padding: 18px;
       font-size: 13px;
       line-height: 1.8;
       color: #ccc;
-      min-height: 200px;
+      min-height: 160px;
       white-space: pre-wrap;
       word-wrap: break-word;
     }
-
+    .placeholder-text {
+      color: #333;
+      font-size: 12px;
+      text-align: center;
+      padding: 40px 0;
+      letter-spacing: 0.5px;
+    }
     .loading {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 8px;
       color: #555;
       font-size: 13px;
+      padding: 20px 0;
     }
     .loading-dot {
       width: 6px; height: 6px;
@@ -230,17 +229,279 @@
       50% { transform: translateY(-6px); opacity: 1; }
     }
 
-    .placeholder-text {
-      color: #333;
-      font-size: 13px;
-      text-align: center;
-      padding: 40px 0;
+    /* RIGHT PANEL - Library */
+    .right-panel {
+      width: 280px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      background: rgba(0,0,0,0.2);
+      overflow: hidden;
+    }
+    .library-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .library-title {
+      font-size: 10px;
+      color: #00aaff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .new-folder-btn {
+      font-size: 10px;
+      color: #555;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 4px;
+      padding: 3px 8px;
+      cursor: pointer;
+      transition: all 0.2s;
       letter-spacing: 0.5px;
     }
+    .new-folder-btn:hover { color: #00aaff; border-color: rgba(0,170,255,0.3); }
+
+    .library-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+    .library-list::-webkit-scrollbar { width: 3px; }
+    .library-list::-webkit-scrollbar-thumb { background: #222; border-radius: 4px; }
+
+    /* Folder */
+    .folder-item { margin-bottom: 4px; }
+    .folder-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      group: true;
+    }
+    .folder-header:hover { background: rgba(255,255,255,0.04); }
+    .folder-icon { font-size: 13px; transition: transform 0.2s; }
+    .folder-icon.open { transform: rotate(90deg); }
+    .folder-name {
+      font-size: 12px;
+      color: #aaa;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .folder-count {
+      font-size: 10px;
+      color: #444;
+      background: rgba(255,255,255,0.05);
+      padding: 1px 6px;
+      border-radius: 10px;
+    }
+    .folder-delete {
+      font-size: 10px;
+      color: #333;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.2s;
+      opacity: 0;
+    }
+    .folder-header:hover .folder-delete { opacity: 1; }
+    .folder-delete:hover { color: #ff4444; }
+
+    .folder-contents { display: none; padding-left: 12px; }
+    .folder-contents.open { display: block; }
+
+    /* Saved Item */
+    .saved-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 2px;
+    }
+    .saved-item:hover { background: rgba(255,255,255,0.04); }
+    .saved-item.active { background: rgba(0,170,255,0.08); }
+    .saved-item-icon { font-size: 11px; color: #444; flex-shrink: 0; }
+    .saved-item-name {
+      font-size: 12px;
+      color: #888;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .saved-item:hover .saved-item-name { color: #ccc; }
+    .saved-item.active .saved-item-name { color: #00aaff; }
+    .item-delete {
+      font-size: 10px;
+      color: #333;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 2px 4px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: color 0.2s;
+    }
+    .saved-item:hover .item-delete { opacity: 1; }
+    .item-delete:hover { color: #ff4444; }
+
+    .empty-library {
+      text-align: center;
+      color: #333;
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 40px 20px;
+      line-height: 2;
+    }
+
+    /* Save Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.7);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: #12121e;
+      border: 1px solid rgba(0,170,255,0.2);
+      border-radius: 14px;
+      padding: 28px;
+      width: 400px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    }
+    .modal h3 {
+      font-size: 15px;
+      color: #fff;
+      margin-bottom: 6px;
+    }
+    .modal p {
+      font-size: 12px;
+      color: #555;
+      margin-bottom: 20px;
+    }
+    .modal-input-group { margin-bottom: 14px; }
+    .modal-label {
+      font-size: 10px;
+      color: #00aaff;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: block;
+    }
+    .modal input, .modal select {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      outline: none;
+    }
+    .modal input:focus { border-color: rgba(0,170,255,0.4); }
+    .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+    .modal-cancel {
+      padding: 9px 20px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: #555;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-cancel:hover { color: #aaa; }
+    .modal-save {
+      padding: 9px 24px;
+      background: linear-gradient(135deg, #00aaff, #0066cc);
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-save:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,170,255,0.3); }
+
+    /* View Modal */
+    .view-modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .view-modal-overlay.show { display: flex; }
+    .view-modal {
+      background: #12121e;
+      border: 1px solid rgba(0,170,255,0.15);
+      border-radius: 14px;
+      padding: 28px;
+      width: 640px;
+      max-height: 80vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.6);
+    }
+    .view-modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .view-modal-title { font-size: 16px; color: #fff; font-weight: 600; }
+    .view-modal-meta { font-size: 11px; color: #444; margin-top: 4px; letter-spacing: 0.5px; }
+    .view-modal-close {
+      background: none;
+      border: none;
+      color: #444;
+      font-size: 20px;
+      cursor: pointer;
+      transition: color 0.2s;
+      padding: 0 4px;
+    }
+    .view-modal-close:hover { color: #fff; }
+    .view-modal-content {
+      flex: 1;
+      overflow-y: auto;
+      background: rgba(0,170,255,0.03);
+      border: 1px solid rgba(0,170,255,0.1);
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: #ccc;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .view-modal-actions { display: flex; gap: 10px; margin-top: 16px; justify-content: flex-end; }
 
     footer {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
+      position: relative;
       z-index: 10;
       background: rgba(5,5,10,0.95);
       border-top: 1px solid rgba(0,170,255,0.1);
@@ -250,6 +511,7 @@
       font-size: 11px;
       color: #444;
       letter-spacing: 0.5px;
+      flex-shrink: 0;
     }
     .highlight { color: #00aaff; }
   </style>
@@ -264,176 +526,243 @@
   <div class="header-right" id="datetime"></div>
 </header>
 
-<!-- Tabs -->
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('email')">📧 Email Drafter</div>
-  <div class="tab" onclick="switchTab('summarizer')">📄 Doc Summarizer</div>
-  <div class="tab" onclick="switchTab('video')">🎬 Video Prompt</div>
-  <div class="tab" onclick="switchTab('aiprompt')">🤖 AI Prompt</div>
+<div class="layout">
+
+  <!-- LEFT: Tool Panel -->
+  <div class="left-panel">
+    <div class="tabs">
+      <div class="tab active" onclick="switchTab('email', this)">📧 Email Drafter</div>
+      <div class="tab" onclick="switchTab('summarizer', this)">📄 Doc Summarizer</div>
+      <div class="tab" onclick="switchTab('video', this)">🎬 Video Prompt</div>
+      <div class="tab" onclick="switchTab('aiprompt', this)">🤖 AI Prompt</div>
+    </div>
+
+    <div class="tool-area">
+
+      <!-- EMAIL DRAFTER -->
+      <div class="tool-panel active" id="panel-email">
+        <p class="tool-description">Describe what your email is about — AI will write a professional email for you.</p>
+        <div class="row-inputs">
+          <div class="input-group">
+            <label class="input-label">Email Purpose</label>
+            <input type="text" id="email-purpose" placeholder="e.g. Follow up on pending approval"/>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Recipient & Context</label>
+            <input type="text" id="email-recipient" placeholder="e.g. My manager, regarding Q3 report"/>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Tone</label>
+          <select id="email-tone">
+            <option value="professional">Professional & Formal</option>
+            <option value="friendly">Friendly & Warm</option>
+            <option value="assertive">Assertive & Direct</option>
+            <option value="apologetic">Apologetic & Polite</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Key Points to Include</label>
+          <textarea id="email-points" rows="3" placeholder="e.g. Meeting postponed, need confirmation by Friday..."></textarea>
+        </div>
+        <button class="generate-btn" onclick="generate('email')">⚡ Generate Email</button>
+        <div class="output-section">
+          <div class="output-header">
+            <span class="output-label">Generated Email</span>
+            <div class="output-actions">
+              <button class="copy-btn" onclick="copyOutput('email-output')">Copy</button>
+              <button class="save-trigger-btn" onclick="openSaveModal('email')">💾 Save</button>
+            </div>
+          </div>
+          <div class="output-box" id="email-output">
+            <div class="placeholder-text">Your generated email will appear here...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- DOC SUMMARIZER -->
+      <div class="tool-panel" id="panel-summarizer">
+        <p class="tool-description">Paste any long document or report — AI will give you a clean structured summary.</p>
+        <div class="input-group">
+          <label class="input-label">Paste Your Document</label>
+          <textarea id="doc-content" rows="7" placeholder="Paste your document content here..."></textarea>
+        </div>
+        <div class="row-inputs">
+          <div class="input-group">
+            <label class="input-label">Summary Length</label>
+            <select id="doc-length">
+              <option value="brief">Brief (3-5 points)</option>
+              <option value="standard" selected>Standard (1 paragraph)</option>
+              <option value="detailed">Detailed (full breakdown)</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Focus Area</label>
+            <select id="doc-focus">
+              <option value="general">General Overview</option>
+              <option value="action">Action Items Only</option>
+              <option value="decisions">Key Decisions</option>
+              <option value="financial">Financial Highlights</option>
+            </select>
+          </div>
+        </div>
+        <button class="generate-btn" onclick="generate('summarizer')">⚡ Summarize Document</button>
+        <div class="output-section">
+          <div class="output-header">
+            <span class="output-label">Summary</span>
+            <div class="output-actions">
+              <button class="copy-btn" onclick="copyOutput('summarizer-output')">Copy</button>
+              <button class="save-trigger-btn" onclick="openSaveModal('summarizer')">💾 Save</button>
+            </div>
+          </div>
+          <div class="output-box" id="summarizer-output">
+            <div class="placeholder-text">Your summary will appear here...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIDEO PROMPT -->
+      <div class="tool-panel" id="panel-video">
+        <p class="tool-description">Describe your video idea — AI will generate a detailed production-ready prompt.</p>
+        <div class="input-group">
+          <label class="input-label">Video Concept</label>
+          <input type="text" id="video-concept" placeholder="e.g. A cinematic product reveal for a luxury watch"/>
+        </div>
+        <div class="row-inputs">
+          <div class="input-group">
+            <label class="input-label">Video Style</label>
+            <select id="video-style">
+              <option value="cinematic">Cinematic & Epic</option>
+              <option value="corporate">Corporate & Professional</option>
+              <option value="social">Social Media / Viral</option>
+              <option value="documentary">Documentary Style</option>
+              <option value="animation">Animation / Motion Graphics</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Target Platform</label>
+            <select id="video-platform">
+              <option value="youtube">YouTube</option>
+              <option value="instagram">Instagram / TikTok</option>
+              <option value="linkedin">LinkedIn</option>
+              <option value="presentation">Presentation / Internal</option>
+            </select>
+          </div>
+        </div>
+        <div class="input-group">
+          <label class="input-label">Additional Details</label>
+          <textarea id="video-details" rows="3" placeholder="e.g. Target audience, mood, key message, duration..."></textarea>
+        </div>
+        <button class="generate-btn" onclick="generate('video')">⚡ Generate Video Prompt</button>
+        <div class="output-section">
+          <div class="output-header">
+            <span class="output-label">Video Prompt</span>
+            <div class="output-actions">
+              <button class="copy-btn" onclick="copyOutput('video-output')">Copy</button>
+              <button class="save-trigger-btn" onclick="openSaveModal('video')">💾 Save</button>
+            </div>
+          </div>
+          <div class="output-box" id="video-output">
+            <div class="placeholder-text">Your video prompt will appear here...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI PROMPT DRAFTER -->
+      <div class="tool-panel" id="panel-aiprompt">
+        <p class="tool-description">Describe what you need AI to do — this tool writes you the perfect optimized prompt.</p>
+        <div class="input-group">
+          <label class="input-label">What Do You Need AI To Do?</label>
+          <textarea id="aiprompt-goal" rows="3" placeholder="e.g. I want AI to help me write a weekly report summarizing project progress..."></textarea>
+        </div>
+        <div class="row-inputs">
+          <div class="input-group">
+            <label class="input-label">AI Tool You'll Use</label>
+            <select id="aiprompt-tool">
+              <option value="claude">Claude</option>
+              <option value="chatgpt">ChatGPT</option>
+              <option value="midjourney">Midjourney (Image)</option>
+              <option value="runway">Runway (Video)</option>
+              <option value="general">General / Any AI</option>
+            </select>
+          </div>
+          <div class="input-group">
+            <label class="input-label">Output Format</label>
+            <select id="aiprompt-format">
+              <option value="detailed">Detailed & Comprehensive</option>
+              <option value="concise">Concise & Direct</option>
+              <option value="structured">Structured with Headers</option>
+              <option value="bullets">Bullet Points</option>
+            </select>
+          </div>
+        </div>
+        <button class="generate-btn" onclick="generate('aiprompt')">⚡ Generate AI Prompt</button>
+        <div class="output-section">
+          <div class="output-header">
+            <span class="output-label">Your AI Prompt</span>
+            <div class="output-actions">
+              <button class="copy-btn" onclick="copyOutput('aiprompt-output')">Copy</button>
+              <button class="save-trigger-btn" onclick="openSaveModal('aiprompt')">💾 Save</button>
+            </div>
+          </div>
+          <div class="output-box" id="aiprompt-output">
+            <div class="placeholder-text">Your generated prompt will appear here...</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- RIGHT: Library Panel -->
+  <div class="right-panel">
+    <div class="library-header">
+      <span class="library-title">📁 Library</span>
+      <button class="new-folder-btn" onclick="createFolder()">+ New Folder</button>
+    </div>
+    <div class="library-list" id="library-list">
+      <div class="empty-library">No saved items yet.<br/>Generate something<br/>and save it!</div>
+    </div>
+  </div>
+
 </div>
 
-<div class="main">
-
-  <!-- EMAIL DRAFTER -->
-  <div class="tool-panel active" id="panel-email">
-    <p class="tool-description">Describe what your email is about and who it's for — AI will write a professional email for you.</p>
-    <div class="row-inputs">
-      <div class="input-group">
-        <label class="input-label">Email Purpose</label>
-        <input type="text" id="email-purpose" placeholder="e.g. Follow up on pending approval"/>
-      </div>
-      <div class="input-group">
-        <label class="input-label">Recipient & Context</label>
-        <input type="text" id="email-recipient" placeholder="e.g. My manager, regarding Q3 report"/>
-      </div>
+<!-- Save Modal -->
+<div class="modal-overlay" id="save-modal">
+  <div class="modal">
+    <h3>💾 Save to Library</h3>
+    <p>Name this output and choose a folder to save it in.</p>
+    <div class="modal-input-group">
+      <label class="modal-label">Title</label>
+      <input type="text" id="save-title" placeholder="e.g. Sponsor Email Draft 1"/>
     </div>
-    <div class="input-group">
-      <label class="input-label">Tone</label>
-      <select id="email-tone">
-        <option value="professional">Professional & Formal</option>
-        <option value="friendly">Friendly & Warm</option>
-        <option value="assertive">Assertive & Direct</option>
-        <option value="apologetic">Apologetic & Polite</option>
-      </select>
+    <div class="modal-input-group">
+      <label class="modal-label">Folder</label>
+      <select id="save-folder-select"></select>
     </div>
-    <div class="input-group">
-      <label class="input-label">Key Points to Include</label>
-      <textarea id="email-points" rows="3" placeholder="e.g. - Meeting was postponed&#10;- Need confirmation by Friday&#10;- Attach updated report"></textarea>
-    </div>
-    <button class="generate-btn" onclick="generate('email')">⚡ Generate Email</button>
-    <div class="output-section">
-      <div class="output-header">
-        <span class="output-label">Generated Email</span>
-        <button class="copy-btn" onclick="copyOutput('email-output')">Copy</button>
-      </div>
-      <div class="output-box" id="email-output">
-        <div class="placeholder-text">Your generated email will appear here...</div>
-      </div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeSaveModal()">Cancel</button>
+      <button class="modal-save" onclick="saveItem()">Save</button>
     </div>
   </div>
+</div>
 
-  <!-- DOCUMENT SUMMARIZER -->
-  <div class="tool-panel" id="panel-summarizer">
-    <p class="tool-description">Paste any long document, report or article — AI will give you a clean, structured summary.</p>
-    <div class="input-group">
-      <label class="input-label">Paste Your Document</label>
-      <textarea id="doc-content" rows="8" placeholder="Paste your document content here..."></textarea>
+<!-- View Modal -->
+<div class="view-modal-overlay" id="view-modal">
+  <div class="view-modal">
+    <div class="view-modal-header">
+      <div>
+        <div class="view-modal-title" id="view-title"></div>
+        <div class="view-modal-meta" id="view-meta"></div>
+      </div>
+      <button class="view-modal-close" onclick="closeViewModal()">✕</button>
     </div>
-    <div class="row-inputs">
-      <div class="input-group">
-        <label class="input-label">Summary Length</label>
-        <select id="doc-length">
-          <option value="brief">Brief (3-5 points)</option>
-          <option value="standard" selected>Standard (1 paragraph)</option>
-          <option value="detailed">Detailed (full breakdown)</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label class="input-label">Focus Area</label>
-        <select id="doc-focus">
-          <option value="general">General Overview</option>
-          <option value="action">Action Items Only</option>
-          <option value="decisions">Key Decisions</option>
-          <option value="financial">Financial Highlights</option>
-        </select>
-      </div>
-    </div>
-    <button class="generate-btn" onclick="generate('summarizer')">⚡ Summarize Document</button>
-    <div class="output-section">
-      <div class="output-header">
-        <span class="output-label">Summary</span>
-        <button class="copy-btn" onclick="copyOutput('summarizer-output')">Copy</button>
-      </div>
-      <div class="output-box" id="summarizer-output">
-        <div class="placeholder-text">Your summary will appear here...</div>
-      </div>
+    <div class="view-modal-content" id="view-content"></div>
+    <div class="view-modal-actions">
+      <button class="copy-btn" onclick="copyViewContent()" style="color:#555;">Copy</button>
+      <button class="modal-cancel" onclick="closeViewModal()">Close</button>
     </div>
   </div>
-
-  <!-- VIDEO PROMPT DRAFTER -->
-  <div class="tool-panel" id="panel-video">
-    <p class="tool-description">Describe your video idea and AI will generate a detailed, production-ready video prompt.</p>
-    <div class="input-group">
-      <label class="input-label">Video Concept</label>
-      <input type="text" id="video-concept" placeholder="e.g. A cinematic product reveal for a luxury watch"/>
-    </div>
-    <div class="row-inputs">
-      <div class="input-group">
-        <label class="input-label">Video Style</label>
-        <select id="video-style">
-          <option value="cinematic">Cinematic & Epic</option>
-          <option value="corporate">Corporate & Professional</option>
-          <option value="social">Social Media / Viral</option>
-          <option value="documentary">Documentary Style</option>
-          <option value="animation">Animation / Motion Graphics</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label class="input-label">Target Platform</label>
-        <select id="video-platform">
-          <option value="youtube">YouTube</option>
-          <option value="instagram">Instagram / TikTok</option>
-          <option value="linkedin">LinkedIn</option>
-          <option value="presentation">Presentation / Internal</option>
-        </select>
-      </div>
-    </div>
-    <div class="input-group">
-      <label class="input-label">Additional Details</label>
-      <textarea id="video-details" rows="3" placeholder="e.g. Target audience, mood, key message, duration..."></textarea>
-    </div>
-    <button class="generate-btn" onclick="generate('video')">⚡ Generate Video Prompt</button>
-    <div class="output-section">
-      <div class="output-header">
-        <span class="output-label">Video Prompt</span>
-        <button class="copy-btn" onclick="copyOutput('video-output')">Copy</button>
-      </div>
-      <div class="output-box" id="video-output">
-        <div class="placeholder-text">Your video prompt will appear here...</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- AI PROMPT DRAFTER -->
-  <div class="tool-panel" id="panel-aiprompt">
-    <p class="tool-description">Describe what you want AI to do — this tool will write you the perfect, detailed prompt to get the best results.</p>
-    <div class="input-group">
-      <label class="input-label">What Do You Need AI To Do?</label>
-      <textarea id="aiprompt-goal" rows="3" placeholder="e.g. I want AI to help me write a weekly report for my team summarizing our project progress..."></textarea>
-    </div>
-    <div class="row-inputs">
-      <div class="input-group">
-        <label class="input-label">AI Tool You'll Use</label>
-        <select id="aiprompt-tool">
-          <option value="claude">Claude</option>
-          <option value="chatgpt">ChatGPT</option>
-          <option value="midjourney">Midjourney (Image)</option>
-          <option value="runway">Runway (Video)</option>
-          <option value="general">General / Any AI</option>
-        </select>
-      </div>
-      <div class="input-group">
-        <label class="input-label">Output Format</label>
-        <select id="aiprompt-format">
-          <option value="detailed">Detailed & Comprehensive</option>
-          <option value="concise">Concise & Direct</option>
-          <option value="structured">Structured with Headers</option>
-          <option value="bullets">Bullet Points</option>
-        </select>
-      </div>
-    </div>
-    <button class="generate-btn" onclick="generate('aiprompt')">⚡ Generate AI Prompt</button>
-    <div class="output-section">
-      <div class="output-header">
-        <span class="output-label">Your AI Prompt</span>
-        <button class="copy-btn" onclick="copyOutput('aiprompt-output')">Copy</button>
-      </div>
-      <div class="output-box" id="aiprompt-output">
-        <div class="placeholder-text">Your generated prompt will appear here...</div>
-      </div>
-    </div>
-  </div>
-
 </div>
 
 <footer>
@@ -443,37 +772,31 @@
 </footer>
 
 <script>
-  // Tab switching
-  function switchTab(tab) {
+  // ── DATA ──────────────────────────────────────────
+  let library = JSON.parse(localStorage.getItem('ai-library') || '{}');
+  // library = { "FolderName": [ { id, title, tool, content, date } ] }
+
+  let currentTool = 'email';
+  let pendingContent = '';
+  let pendingSave = null;
+
+  function saveLibrary() {
+    localStorage.setItem('ai-library', JSON.stringify(library));
+  }
+
+  // ── TABS ──────────────────────────────────────────
+  function switchTab(tab, el) {
     document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
     document.querySelectorAll('.tool-panel').forEach(p => p.classList.remove('active'));
-    event.target.classList.add('active');
+    el.classList.add('active');
     document.getElementById('panel-' + tab).classList.add('active');
+    currentTool = tab;
   }
 
-  // Copy output
-  function copyOutput(id) {
-    const text = document.getElementById(id).innerText;
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Copied to clipboard!');
-    });
-  }
-
-  // Show loading
-  function showLoading(outputId) {
-    document.getElementById(outputId).innerHTML = `
-      <div class="loading">
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <div class="loading-dot"></div>
-        <span style="margin-left:8px;">AI is generating...</span>
-      </div>`;
-  }
-
-  // Main generate function
+  // ── GENERATE ──────────────────────────────────────
   async function generate(tool) {
     let prompt = '';
-    let outputId = '';
+    let outputId = tool + '-output';
 
     if (tool === 'email') {
       const purpose = document.getElementById('email-purpose').value.trim();
@@ -481,24 +804,14 @@
       const tone = document.getElementById('email-tone').value;
       const points = document.getElementById('email-points').value.trim();
       if (!purpose) { alert('Please enter the email purpose!'); return; }
-      outputId = 'email-output';
-      prompt = `Write a ${tone} professional email with the following details:
-Purpose: ${purpose}
-Recipient/Context: ${recipient}
-Key points to include: ${points}
-Format it with Subject line, greeting, body, and sign-off. Keep it clear and concise.`;
+      prompt = `Write a ${tone} professional email.\nPurpose: ${purpose}\nRecipient/Context: ${recipient}\nKey points: ${points}\nFormat with Subject, greeting, body, and sign-off.`;
 
     } else if (tool === 'summarizer') {
       const content = document.getElementById('doc-content').value.trim();
       const length = document.getElementById('doc-length').value;
       const focus = document.getElementById('doc-focus').value;
-      if (!content) { alert('Please paste your document content!'); return; }
-      outputId = 'summarizer-output';
-      prompt = `Summarize the following document. 
-Summary length: ${length}
-Focus on: ${focus}
-Document: ${content}
-Provide a clean, structured summary.`;
+      if (!content) { alert('Please paste your document!'); return; }
+      prompt = `Summarize this document.\nLength: ${length}\nFocus: ${focus}\nDocument:\n${content}`;
 
     } else if (tool === 'video') {
       const concept = document.getElementById('video-concept').value.trim();
@@ -506,33 +819,32 @@ Provide a clean, structured summary.`;
       const platform = document.getElementById('video-platform').value;
       const details = document.getElementById('video-details').value.trim();
       if (!concept) { alert('Please enter your video concept!'); return; }
-      outputId = 'video-output';
-      prompt = `Write a detailed, production-ready video prompt for the following:
-Concept: ${concept}
-Style: ${style}
-Platform: ${platform}
-Additional details: ${details}
-Include: scene descriptions, camera angles, mood, pacing, music suggestions, and visual style guide.`;
+      prompt = `Write a detailed production-ready video prompt.\nConcept: ${concept}\nStyle: ${style}\nPlatform: ${platform}\nDetails: ${details}\nInclude scene descriptions, camera angles, mood, pacing, music suggestions.`;
 
     } else if (tool === 'aiprompt') {
       const goal = document.getElementById('aiprompt-goal').value.trim();
       const aitool = document.getElementById('aiprompt-tool').value;
       const format = document.getElementById('aiprompt-format').value;
       if (!goal) { alert('Please describe what you need AI to do!'); return; }
-      outputId = 'aiprompt-output';
-      prompt = `Create a detailed, effective AI prompt for the following goal:
-Goal: ${goal}
-AI Tool: ${aitool}
-Desired output format: ${format}
-Write a complete, optimized prompt that will get the best possible results from the AI.`;
+      prompt = `Create an optimized AI prompt.\nGoal: ${goal}\nAI Tool: ${aitool}\nOutput format: ${format}\nWrite a complete, detailed prompt for best results.`;
     }
 
-    showLoading(outputId);
+    document.getElementById(outputId).innerHTML = `
+      <div class="loading">
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <div class="loading-dot"></div>
+        <span style="margin-left:8px;">AI is generating...</span>
+      </div>`;
 
     try {
       const response = await fetch('https://api.anthropic.com/v1/messages', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          'x-api-key': 'YOUR_API_KEY_HERE',
+          'anthropic-version': '2023-06-01'
+        },
         body: JSON.stringify({
           model: 'claude-sonnet-4-20250514',
           max_tokens: 1000,
@@ -540,14 +852,162 @@ Write a complete, optimized prompt that will get the best possible results from 
         })
       });
       const data = await response.json();
-      const result = data.content?.[0]?.text || 'No response received. Please try again.';
+      const result = data.content?.[0]?.text || 'No response. Please try again.';
       document.getElementById(outputId).innerText = result;
+      pendingContent = result;
     } catch (err) {
       document.getElementById(outputId).innerText = '❌ Error connecting to AI. Please try again.';
     }
   }
 
-  // Clock
+  // ── COPY ──────────────────────────────────────────
+  function copyOutput(id) {
+    const text = document.getElementById(id).innerText;
+    navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+  }
+  function copyViewContent() {
+    const text = document.getElementById('view-content').innerText;
+    navigator.clipboard.writeText(text).then(() => alert('Copied!'));
+  }
+
+  // ── SAVE MODAL ────────────────────────────────────
+  function openSaveModal(tool) {
+    const outputId = tool + '-output';
+    const content = document.getElementById(outputId).innerText.trim();
+    if (!content || content.includes('will appear here') || content.includes('AI is generating')) {
+      alert('Please generate something first!'); return;
+    }
+    pendingSave = { tool, content };
+    renderFolderSelect();
+    document.getElementById('save-title').value = '';
+    document.getElementById('save-modal').classList.add('show');
+    setTimeout(() => document.getElementById('save-title').focus(), 100);
+  }
+
+  function closeSaveModal() {
+    document.getElementById('save-modal').classList.remove('show');
+    pendingSave = null;
+  }
+
+  function renderFolderSelect() {
+    const sel = document.getElementById('save-folder-select');
+    const folders = Object.keys(library);
+    if (folders.length === 0) {
+      sel.innerHTML = '<option value="__new__">+ Create new folder...</option>';
+    } else {
+      sel.innerHTML = folders.map(f => `<option value="${f}">${f}</option>`).join('');
+      sel.innerHTML += '<option value="__new__">+ Create new folder...</option>';
+    }
+  }
+
+  function saveItem() {
+    const title = document.getElementById('save-title').value.trim();
+    if (!title) { alert('Please enter a title!'); return; }
+
+    let folder = document.getElementById('save-folder-select').value;
+    if (folder === '__new__') {
+      folder = prompt('Enter new folder name:');
+      if (!folder || !folder.trim()) return;
+      folder = folder.trim();
+    }
+
+    if (!library[folder]) library[folder] = [];
+    library[folder].push({
+      id: Date.now(),
+      title,
+      tool: pendingSave.tool,
+      content: pendingSave.content,
+      date: new Date().toLocaleDateString('en-MY')
+    });
+
+    saveLibrary();
+    renderLibrary();
+    closeSaveModal();
+  }
+
+  // ── FOLDER ────────────────────────────────────────
+  function createFolder() {
+    const name = prompt('Enter folder name:');
+    if (!name || !name.trim()) return;
+    if (library[name.trim()]) { alert('Folder already exists!'); return; }
+    library[name.trim()] = [];
+    saveLibrary();
+    renderLibrary();
+  }
+
+  function deleteFolder(folder) {
+    if (!confirm(`Delete folder "${folder}" and all its contents?`)) return;
+    delete library[folder];
+    saveLibrary();
+    renderLibrary();
+  }
+
+  function toggleFolder(folder) {
+    const contents = document.getElementById('folder-' + CSS.escape(folder));
+    const icon = document.getElementById('icon-' + CSS.escape(folder));
+    contents.classList.toggle('open');
+    icon.classList.toggle('open');
+  }
+
+  // ── LIBRARY RENDER ────────────────────────────────
+  function renderLibrary() {
+    const list = document.getElementById('library-list');
+    const folders = Object.keys(library);
+
+    if (folders.length === 0) {
+      list.innerHTML = '<div class="empty-library">No saved items yet.<br/>Generate something<br/>and save it!</div>';
+      return;
+    }
+
+    list.innerHTML = folders.map(folder => {
+      const items = library[folder];
+      const itemsHtml = items.length === 0
+        ? '<div style="font-size:11px;color:#333;padding:6px 10px;">Empty folder</div>'
+        : items.map(item => `
+          <div class="saved-item" onclick="viewItem('${folder}', ${item.id})">
+            <span class="saved-item-icon">📄</span>
+            <span class="saved-item-name" title="${item.title}">${item.title}</span>
+            <button class="item-delete" onclick="event.stopPropagation(); deleteItem('${folder}', ${item.id})">✕</button>
+          </div>`).join('');
+
+      return `
+        <div class="folder-item">
+          <div class="folder-header" onclick="toggleFolder('${folder}')">
+            <span class="folder-icon" id="icon-${folder}">▶</span>
+            <span class="folder-name" title="${folder}">${folder}</span>
+            <span class="folder-count">${items.length}</span>
+            <button class="folder-delete" onclick="event.stopPropagation(); deleteFolder('${folder}')">✕</button>
+          </div>
+          <div class="folder-contents open" id="folder-${folder}">
+            ${itemsHtml}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  // ── VIEW ITEM ─────────────────────────────────────
+  function viewItem(folder, id) {
+    const item = library[folder].find(i => i.id === id);
+    if (!item) return;
+    document.getElementById('view-title').textContent = item.title;
+    document.getElementById('view-meta').textContent = `${item.tool.toUpperCase()} · ${folder} · ${item.date}`;
+    document.getElementById('view-content').textContent = item.content;
+    document.getElementById('view-modal').classList.add('show');
+  }
+
+  function closeViewModal() {
+    document.getElementById('view-modal').classList.remove('show');
+  }
+
+  // ── DELETE ITEM ───────────────────────────────────
+  function deleteItem(folder, id) {
+    if (!confirm('Delete this saved item?')) return;
+    library[folder] = library[folder].filter(i => i.id !== id);
+    saveLibrary();
+    renderLibrary();
+  }
+
+  // ── CLOCK ─────────────────────────────────────────
   function updateTime() {
     const now = new Date();
     const options = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
@@ -556,6 +1016,9 @@ Write a complete, optimized prompt that will get the best possible results from 
   }
   updateTime();
   setInterval(updateTime, 1000);
+
+  // ── INIT ──────────────────────────────────────────
+  renderLibrary();
 </script>
 </body>
 </html>
